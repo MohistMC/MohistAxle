@@ -9,6 +9,7 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mohistmc.i18n.i18n;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.github.waterfallmc.waterfall.conf.WaterfallConfiguration;
 import io.github.waterfallmc.waterfall.event.ProxyExceptionEvent;
@@ -117,10 +118,6 @@ public class BungeeCord extends ProxyServer
      */
     @Getter
     public final Configuration config = new WaterfallConfiguration();
-    /**
-     * Localization formats.
-     */
-    private Map<String, Format> messageFormats;
     public EventLoopGroup bossEventLoopGroup, workerEventLoopGroup;
     /**
      * locations.yml save thread.
@@ -192,50 +189,10 @@ public class BungeeCord extends ProxyServer
     @SuppressFBWarnings("DM_DEFAULT_ENCODING")
     public BungeeCord() throws IOException
     {
-        // Java uses ! to indicate a resource inside of a jar/zip/other container. Running Bungee from within a directory that has a ! will cause this to muck up.
         Preconditions.checkState( new File( "." ).getAbsolutePath().indexOf( '!' ) == -1, "Cannot use Waterfall in directory with ! in path." );
-
-        reloadMessages();
-
-        // This is a workaround for quite possibly the weirdest bug I have ever encountered in my life!
-        // When jansi attempts to extract its natives, by default it tries to extract a specific version,
-        // using the loading class's implementation version. Normally this works completely fine,
-        // however when on Windows certain characters such as - and : can trigger special behaviour.
-        // Furthermore this behaviour only occurs in specific combinations due to the parsing done by jansi.
-        // For example test-test works fine, but test-test-test does not! In order to avoid this all together but
-        // still keep our versions the same as they were, we set the override property to the essentially garbage version
-        // BungeeCord. This version is only used when extracting the libraries to their temp folder.
         System.setProperty( "library.jansi.version", "BungeeCord" );
 
-        // Waterfall start - Use TerminalConsoleAppender and Log4J
-        /*
-        AnsiConsole.systemInstall();
-        consoleReader = new ConsoleReader();
-        consoleReader.setExpandEvents( false );
-        consoleReader.addCompleter( new ConsoleCommandCompleter( this ) );
-
-        logger = new BungeeLogger( "BungeeCord", "proxy.log", consoleReader );
-        JDK14LoggerFactory.LOGGER = logger;
-
-        // Before we can set the Err and Out streams to our LoggingOutputStream we also have to remove
-        // the default ConsoleHandler from the root logger, which writes to the err stream.
-        // But we still want to log these records, so we add our own handler which forwards the LogRecord to the BungeeLogger.
-        // This way we skip the err stream and the problem of only getting a string without context, and can handle the LogRecord itself.
-        // Thus improving the default bahavior for projects that log on other Logger instances not created by BungeeCord.
-        Logger rootLogger = Logger.getLogger( "" );
-        for ( Handler handler : rootLogger.getHandlers() )
-        {
-            rootLogger.removeHandler( handler );
-        }
-        rootLogger.addHandler( new LoggingForwardHandler( logger ) );
-
-        // We want everything that reaches these output streams to be handled by our logger
-        // since it applies a nice looking format and also writes to the logfile.
-        System.setErr( new PrintStream( new LoggingOutputStream( logger, Level.SEVERE ), true ) );
-        System.setOut( new PrintStream( new LoggingOutputStream( logger, Level.INFO ), true ) );
-        */
         logger = io.github.waterfallmc.waterfall.log4j.WaterfallLogger.create();
-        // Waterfall end
 
         pluginManager = new PluginManager( this );
         getPluginManager().registerCommand( null, new CommandReload() );
@@ -562,35 +519,6 @@ public class BungeeCord extends ProxyServer
         return ( BungeeCord.class.getPackage().getImplementationVersion() == null ) ? "unknown" : BungeeCord.class.getPackage().getImplementationVersion();
     }
 
-    public final void reloadMessages()
-    {
-        Map<String, Format> cachedFormats = new HashMap<>();
-
-        File file = new File( "messages.properties" );
-        if ( file.isFile() )
-        {
-            try ( FileReader rd = new FileReader( file ) )
-            {
-                cacheResourceBundle( cachedFormats, new PropertyResourceBundle( rd ) );
-            } catch ( IOException ex )
-            {
-                getLogger().log( Level.SEVERE, "Could not load custom messages.properties", ex );
-            }
-        }
-
-        ResourceBundle baseBundle;
-        try
-        {
-            baseBundle = ResourceBundle.getBundle( "messages" );
-        } catch ( MissingResourceException ex )
-        {
-            baseBundle = ResourceBundle.getBundle( "messages", Locale.ENGLISH );
-        }
-        cacheResourceBundle( cachedFormats, baseBundle );
-
-        messageFormats = Collections.unmodifiableMap( cachedFormats );
-    }
-
     private void cacheResourceBundle(Map<String, Format> map, ResourceBundle resourceBundle)
     {
         Enumeration<String> keys = resourceBundle.getKeys();
@@ -603,8 +531,7 @@ public class BungeeCord extends ProxyServer
     @Override
     public String getTranslation(String name, Object... args)
     {
-        Format format = messageFormats.get( name );
-        return ( format != null ) ? format.format( args ) : "<translation '" + name + "' missing>";
+        return i18n.get(name, args);
     }
 
     @Override
