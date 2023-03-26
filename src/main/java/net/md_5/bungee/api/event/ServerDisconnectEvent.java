@@ -12,7 +12,7 @@ import net.md_5.bungee.api.plugin.Event;
 /**
  * Called when the player is disconnected from a server, for example during
  * server switching.
- *
+ * <p>
  * If the player is kicked from a server, {@link ServerKickEvent} will be called
  * instead.
  */
@@ -20,8 +20,7 @@ import net.md_5.bungee.api.plugin.Event;
 @AllArgsConstructor
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class ServerDisconnectEvent extends Event
-{
+public class ServerDisconnectEvent extends Event {
 
     /**
      * Player disconnecting from a server.

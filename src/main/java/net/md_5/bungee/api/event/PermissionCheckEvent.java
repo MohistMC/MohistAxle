@@ -16,8 +16,7 @@ import net.md_5.bungee.api.plugin.Event;
 @AllArgsConstructor
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class PermissionCheckEvent extends Event
-{
+public class PermissionCheckEvent extends Event {
 
     /**
      * The command sender being checked for a permission.
@@ -33,8 +32,7 @@ public class PermissionCheckEvent extends Event
     @Getter(AccessLevel.NONE)
     private boolean hasPermission;
 
-    public boolean hasPermission()
-    {
+    public boolean hasPermission() {
         return hasPermission;
     }
 }

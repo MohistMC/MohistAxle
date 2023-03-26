@@ -11,26 +11,22 @@ import net.md_5.bungee.protocol.ProtocolConstants;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = false)
-public class Subtitle extends DefinedPacket
-{
+public class Subtitle extends DefinedPacket {
 
     private String text;
 
     @Override
-    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        text = readString( buf );
+    public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        text = readString(buf);
     }
 
     @Override
-    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion)
-    {
-        writeString( text, buf );
+    public void write(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
+        writeString(text, buf);
     }
 
     @Override
-    public void handle(AbstractPacketHandler handler) throws Exception
-    {
-        handler.handle( this );
+    public void handle(AbstractPacketHandler handler) throws Exception {
+        handler.handle(this);
     }
 }

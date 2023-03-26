@@ -10,7 +10,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.connection.PendingConnection;
 import net.md_5.bungee.api.plugin.Cancellable;
-import net.md_5.bungee.connection.LoginResult; // Waterfall: Parse LoginResult object to new constructor of LoginEvent
+import net.md_5.bungee.connection.LoginResult;
 
 /**
  * Event called to represent a player logging in.
@@ -18,8 +18,7 @@ import net.md_5.bungee.connection.LoginResult; // Waterfall: Parse LoginResult o
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
-{
+public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable {
 
     /**
      * Cancelled state.
@@ -43,16 +42,14 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
      */
     private final PendingConnection connection;
 
-    public LoginEvent(PendingConnection connection, Callback<LoginEvent> done)
-    {
-        super( done );
+    public LoginEvent(PendingConnection connection, Callback<LoginEvent> done) {
+        super(done);
         this.connection = connection;
     }
 
     // Waterfall start - adding new constructor for LoginResult
-    public LoginEvent(PendingConnection connection, Callback<LoginEvent> done, LoginResult loginResult)
-    {
-        super( done );
+    public LoginEvent(PendingConnection connection, Callback<LoginEvent> done, LoginResult loginResult) {
+        super(done);
         this.connection = connection;
         this.loginResult = loginResult;
     }
@@ -63,9 +60,8 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
      * @deprecated Use component methods instead.
      */
     @Deprecated
-    public String getCancelReason()
-    {
-        return BaseComponent.toLegacyText( getCancelReasonComponents() );
+    public String getCancelReason() {
+        return BaseComponent.toLegacyText(getCancelReasonComponents());
     }
 
     /**
@@ -75,13 +71,11 @@ public class LoginEvent extends AsyncEvent<LoginEvent> implements Cancellable
      * instead.
      */
     @Deprecated
-    public void setCancelReason(String cancelReason)
-    {
-        setCancelReason( TextComponent.fromLegacyText( cancelReason ) );
+    public void setCancelReason(String cancelReason) {
+        setCancelReason(TextComponent.fromLegacyText(cancelReason));
     }
 
-    public void setCancelReason(BaseComponent... cancelReason)
-    {
+    public void setCancelReason(BaseComponent... cancelReason) {
         this.cancelReasonComponents = cancelReason;
     }
 }

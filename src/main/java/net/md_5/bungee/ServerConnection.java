@@ -1,10 +1,6 @@
 package net.md_5.bungee;
 
 import com.google.common.base.Preconditions;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
-import java.util.ArrayDeque;
-import java.util.Queue;
 import lombok.Data;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +11,13 @@ import net.md_5.bungee.netty.ChannelWrapper;
 import net.md_5.bungee.protocol.DefinedPacket;
 import net.md_5.bungee.protocol.packet.PluginMessage;
 
+import java.net.InetSocketAddress;
+import java.net.SocketAddress;
+import java.util.ArrayDeque;
+import java.util.Queue;
+
 @RequiredArgsConstructor
-public class ServerConnection implements Server
-{
+public class ServerConnection implements Server {
 
     @Getter
     private final ChannelWrapper ch;
@@ -31,68 +31,57 @@ public class ServerConnection implements Server
     @Getter
     private final Queue<KeepAliveData> keepAlives = new ArrayDeque<>();
 
-    private final Unsafe unsafe = new Unsafe()
-    {
+    private final Unsafe unsafe = new Unsafe() {
         @Override
-        public void sendPacket(DefinedPacket packet)
-        {
-            ch.write( packet );
+        public void sendPacket(DefinedPacket packet) {
+            ch.write(packet);
         }
     };
 
     @Override
-    public void sendData(String channel, byte[] data)
-    {
-        unsafe().sendPacket( new PluginMessage( channel, data, forgeServer ) );
+    public void sendData(String channel, byte[] data) {
+        unsafe().sendPacket(new PluginMessage(channel, data, forgeServer));
     }
 
     @Override
-    public void disconnect(String reason)
-    {
+    public void disconnect(String reason) {
         disconnect();
     }
 
     @Override
-    public void disconnect(BaseComponent... reason)
-    {
-        Preconditions.checkArgument( reason.length == 0, "Server cannot have disconnect reason" );
+    public void disconnect(BaseComponent... reason) {
+        Preconditions.checkArgument(reason.length == 0, "Server cannot have disconnect reason");
 
         ch.close();
     }
 
     @Override
-    public void disconnect(BaseComponent reason)
-    {
+    public void disconnect(BaseComponent reason) {
         disconnect();
     }
 
     @Override
-    public InetSocketAddress getAddress()
-    {
+    public InetSocketAddress getAddress() {
         return (InetSocketAddress) getSocketAddress();
     }
 
     @Override
-    public SocketAddress getSocketAddress()
-    {
+    public SocketAddress getSocketAddress() {
         return getInfo().getAddress();
     }
 
     @Override
-    public boolean isConnected()
-    {
+    public boolean isConnected() {
         return !ch.isClosed();
     }
 
     @Override
-    public Unsafe unsafe()
-    {
+    public Unsafe unsafe() {
         return unsafe;
     }
 
     @Data
-    public static class KeepAliveData
-    {
+    public static class KeepAliveData {
 
         private final long id;
         private final long time;

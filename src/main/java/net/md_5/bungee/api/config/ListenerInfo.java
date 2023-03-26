@@ -1,11 +1,12 @@
 package net.md_5.bungee.api.config;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.List;
 import java.util.Map;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 
 /**
  * Class representing the configuration of a server listener. Used for allowing
@@ -13,8 +14,7 @@ import lombok.Data;
  */
 @Data
 @AllArgsConstructor
-public class ListenerInfo
-{
+public class ListenerInfo {
 
     /**
      * Host to bind to.
@@ -74,9 +74,8 @@ public class ListenerInfo
     private final boolean proxyProtocol;
 
     @Deprecated
-    public ListenerInfo(InetSocketAddress host, String motd, int maxPlayers, int tabListSize, List<String> serverPriority, boolean forceDefault, Map<String, String> forcedHosts, String tabListType, boolean setLocalAddress, boolean pingPassthrough, int queryPort, boolean queryEnabled)
-    {
-        this( host, motd, maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false );
+    public ListenerInfo(InetSocketAddress host, String motd, int maxPlayers, int tabListSize, List<String> serverPriority, boolean forceDefault, Map<String, String> forcedHosts, String tabListType, boolean setLocalAddress, boolean pingPassthrough, int queryPort, boolean queryEnabled) {
+        this(host, motd, maxPlayers, tabListSize, serverPriority, forceDefault, forcedHosts, tabListType, setLocalAddress, pingPassthrough, queryPort, queryEnabled, false);
     }
 
     /**
@@ -86,9 +85,8 @@ public class ListenerInfo
      * @deprecated replaced by {@link #serverPriority}
      */
     @Deprecated
-    public String getDefaultServer()
-    {
-        return serverPriority.get( 0 );
+    public String getDefaultServer() {
+        return serverPriority.get(0);
     }
 
     /**
@@ -99,9 +97,8 @@ public class ListenerInfo
      * @deprecated replaced by {@link #serverPriority}
      */
     @Deprecated
-    public String getFallbackServer()
-    {
-        return ( serverPriority.size() > 1 ) ? serverPriority.get( 1 ) : getDefaultServer();
+    public String getFallbackServer() {
+        return (serverPriority.size() > 1) ? serverPriority.get(1) : getDefaultServer();
     }
 
     /**
@@ -111,8 +108,7 @@ public class ListenerInfo
      * @deprecated BungeeCord can listen via Unix domain sockets
      */
     @Deprecated
-    public InetSocketAddress getHost()
-    {
+    public InetSocketAddress getHost() {
         return (InetSocketAddress) socketAddress;
     }
 }

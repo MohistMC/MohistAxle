@@ -27,11 +27,6 @@ import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.util.AttributeKey;
 import io.netty.util.internal.PlatformDependent;
-import java.net.SocketAddress;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import net.md_5.bungee.BungeeCord;
@@ -49,62 +44,61 @@ import net.md_5.bungee.protocol.Varint21FrameDecoder;
 import net.md_5.bungee.protocol.Varint21LengthFieldExtraBufPrepender;
 import net.md_5.bungee.protocol.Varint21LengthFieldPrepender;
 
-public class PipelineUtils
-{
+import java.net.SocketAddress;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 
-    public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance( "ListerInfo" );
-    public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>()
-    {
+public class PipelineUtils {
+
+    public static final AttributeKey<ListenerInfo> LISTENER = AttributeKey.newInstance("ListerInfo");
+    public static final ChannelInitializer<Channel> SERVER_CHILD = new ChannelInitializer<Channel>() {
         @Override
-        protected void initChannel(Channel ch) throws Exception
-        {
-            SocketAddress remoteAddress = ( ch.remoteAddress() == null ) ? ch.parent().localAddress() : ch.remoteAddress();
+        protected void initChannel(Channel ch) throws Exception {
+            SocketAddress remoteAddress = (ch.remoteAddress() == null) ? ch.parent().localAddress() : ch.remoteAddress();
 
-            if ( BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle( remoteAddress ) )
-            {
+            if (BungeeCord.getInstance().getConnectionThrottle() != null && BungeeCord.getInstance().getConnectionThrottle().throttle(remoteAddress)) {
                 ch.close();
                 return;
             }
-            ListenerInfo listener = ch.attr( LISTENER ).get();
+            ListenerInfo listener = ch.attr(LISTENER).get();
 
-            if ( BungeeCord.getInstance().getPluginManager().callEvent( new ClientConnectEvent( remoteAddress, listener ) ).isCancelled() )
-            {
+            if (BungeeCord.getInstance().getPluginManager().callEvent(new ClientConnectEvent(remoteAddress, listener)).isCancelled()) {
                 ch.close();
                 return;
             }
 
             ConnectionInitEvent connectionInitEvent = new ConnectionInitEvent(ch.remoteAddress(), listener, (result, throwable) -> { // Waterfall
 
-            if (result.isCancelled()) {
-                ch.close();
-                return;
-            }
+                if (result.isCancelled()) {
+                    ch.close();
+                    return;
+                }
 
 
-            try {
-            BASE.initChannel( ch );
-            } catch (Exception e) {
-                e.printStackTrace();
-                ch.close();
-                return;
-            }
-            ch.pipeline().addBefore( FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder() );
-            ch.pipeline().addAfter( FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
-            ch.pipeline().addAfter( FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder( Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion() ) );
-            ch.pipeline().addBefore( FRAME_PREPENDER, LEGACY_KICKER, legacyKicker );
-            ch.pipeline().get( HandlerBoss.class ).setHandler( new InitialHandler( BungeeCord.getInstance(), listener ) );
+                try {
+                    BASE.initChannel(ch);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    ch.close();
+                    return;
+                }
+                ch.pipeline().addBefore(FRAME_DECODER, LEGACY_DECODER, new LegacyDecoder());
+                ch.pipeline().addAfter(FRAME_DECODER, PACKET_DECODER, new MinecraftDecoder(Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion()));
+                ch.pipeline().addAfter(FRAME_PREPENDER, PACKET_ENCODER, new MinecraftEncoder(Protocol.HANDSHAKE, true, ProxyServer.getInstance().getProtocolVersion()));
+                ch.pipeline().addBefore(FRAME_PREPENDER, LEGACY_KICKER, legacyKicker);
+                ch.pipeline().get(HandlerBoss.class).setHandler(new InitialHandler(BungeeCord.getInstance(), listener));
 
-            if ( listener.isProxyProtocol() )
-            {
-                ch.pipeline().addFirst( new HAProxyMessageDecoder() );
-            }
+                if (listener.isProxyProtocol()) {
+                    ch.pipeline().addFirst(new HAProxyMessageDecoder());
+                }
             }); // Waterfall
 
             BungeeCord.getInstance().getPluginManager().callEvent(connectionInitEvent);
         }
     };
-    public static final Base BASE = new Base( false );
-    public static final Base BASE_SERVERSIDE = new Base( true );
+    public static final Base BASE = new Base(false);
+    public static final Base BASE_SERVERSIDE = new Base(true);
     private static final KickStringWriter legacyKicker = new KickStringWriter();
     private static final Varint21LengthFieldPrepender framePrepender = new Varint21LengthFieldPrepender();
     private static final Varint21LengthFieldExtraBufPrepender serverFramePrepender = new Varint21LengthFieldExtraBufPrepender();
@@ -121,32 +115,25 @@ public class PipelineUtils
 
     private static boolean epoll;
 
-    static
-    {
-        if ( !PlatformDependent.isWindows() && Boolean.parseBoolean( System.getProperty( "bungee.epoll", "true" ) ) )
-        {
-            ProxyServer.getInstance().getLogger().info( "Not on Windows, attempting to use enhanced EpollEventLoop" );
+    static {
+        if (!PlatformDependent.isWindows() && Boolean.parseBoolean(System.getProperty("bungee.epoll", "true"))) {
+            ProxyServer.getInstance().getLogger().info("Not on Windows, attempting to use enhanced EpollEventLoop");
 
-            if ( epoll = Epoll.isAvailable() )
-            {
-                ProxyServer.getInstance().getLogger().info( "Epoll is working, utilising it!" );
-            } else
-            {
-                ProxyServer.getInstance().getLogger().log( Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception( Epoll.unavailabilityCause() ) );
+            if (epoll = Epoll.isAvailable()) {
+                ProxyServer.getInstance().getLogger().info("Epoll is working, utilising it!");
+            } else {
+                ProxyServer.getInstance().getLogger().log(Level.WARNING, "Epoll is not working, falling back to NIO: {0}", Util.exception(Epoll.unavailabilityCause()));
             }
         }
     }
 
-    public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory)
-    {
-        return epoll ? new EpollEventLoopGroup( threads, factory ) : new NioEventLoopGroup( threads, factory );
+    public static EventLoopGroup newEventLoopGroup(int threads, ThreadFactory factory) {
+        return epoll ? new EpollEventLoopGroup(threads, factory) : new NioEventLoopGroup(threads, factory);
     }
 
-    public static Class<? extends ServerChannel> getServerChannel(SocketAddress address)
-    {
-        if ( address instanceof DomainSocketAddress )
-        {
-            Preconditions.checkState( epoll, "Epoll required to have UNIX sockets" );
+    public static Class<? extends ServerChannel> getServerChannel(SocketAddress address) {
+        if (address instanceof DomainSocketAddress) {
+            Preconditions.checkState(epoll, "Epoll required to have UNIX sockets");
 
             return EpollServerDomainSocketChannel.class;
         }
@@ -154,11 +141,9 @@ public class PipelineUtils
         return epoll ? EpollServerSocketChannel.class : NioServerSocketChannel.class;
     }
 
-    public static Class<? extends Channel> getChannel(SocketAddress address)
-    {
-        if ( address instanceof DomainSocketAddress )
-        {
-            Preconditions.checkState( epoll, "Epoll required to have UNIX sockets" );
+    public static Class<? extends Channel> getChannel(SocketAddress address) {
+        if (address instanceof DomainSocketAddress) {
+            Preconditions.checkState(epoll, "Epoll required to have UNIX sockets");
 
             return EpollDomainSocketChannel.class;
         }
@@ -166,43 +151,38 @@ public class PipelineUtils
         return epoll ? EpollSocketChannel.class : NioSocketChannel.class;
     }
 
-    public static Class<? extends DatagramChannel> getDatagramChannel()
-    {
+    public static Class<? extends DatagramChannel> getDatagramChannel() {
         return epoll ? EpollDatagramChannel.class : NioDatagramChannel.class;
     }
 
-    private static final int LOW_MARK = Integer.getInteger( "net.md_5.bungee.low_mark", 2 << 18 ); // 0.5 mb
-    private static final int HIGH_MARK = Integer.getInteger( "net.md_5.bungee.high_mark", 2 << 20 ); // 2 mb
-    private static final WriteBufferWaterMark MARK = new WriteBufferWaterMark( LOW_MARK, HIGH_MARK );
+    private static final int LOW_MARK = Integer.getInteger("net.md_5.bungee.low_mark", 2 << 18); // 0.5 mb
+    private static final int HIGH_MARK = Integer.getInteger("net.md_5.bungee.high_mark", 2 << 20); // 2 mb
+    private static final WriteBufferWaterMark MARK = new WriteBufferWaterMark(LOW_MARK, HIGH_MARK);
 
     @NoArgsConstructor // for backwards compatibility
     @AllArgsConstructor
-    public static final class Base extends ChannelInitializer<Channel>
-    {
+    public static final class Base extends ChannelInitializer<Channel> {
 
         private boolean toServer = false;
 
         @Override
-        public void initChannel(Channel ch) throws Exception
-        {
-            try
-            {
-                ch.config().setOption( ChannelOption.IP_TOS, 0x18 );
-            } catch ( ChannelException ex )
-            {
+        public void initChannel(Channel ch) throws Exception {
+            try {
+                ch.config().setOption(ChannelOption.IP_TOS, 0x18);
+            } catch (ChannelException ex) {
                 // IP_TOS is not supported (Windows XP / Windows Server 2003)
             }
-            ch.config().setOption( ChannelOption.TCP_NODELAY, true );
-            ch.config().setAllocator( PooledByteBufAllocator.DEFAULT );
-            ch.config().setWriteBufferWaterMark( MARK );
+            ch.config().setOption(ChannelOption.TCP_NODELAY, true);
+            ch.config().setAllocator(PooledByteBufAllocator.DEFAULT);
+            ch.config().setWriteBufferWaterMark(MARK);
 
-            ch.pipeline().addLast( FRAME_DECODER, new Varint21FrameDecoder() );
-            ch.pipeline().addLast( TIMEOUT_HANDLER, new ReadTimeoutHandler( BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS ) );
+            ch.pipeline().addLast(FRAME_DECODER, new Varint21FrameDecoder());
+            ch.pipeline().addLast(TIMEOUT_HANDLER, new ReadTimeoutHandler(BungeeCord.getInstance().config.getTimeout(), TimeUnit.MILLISECONDS));
             // No encryption bungee -> server, therefore use extra buffer to avoid copying everything for length prepending
             // Not used bungee -> client as header would need to be encrypted separately through expensive JNI call
-            ch.pipeline().addLast( FRAME_PREPENDER, ( toServer ) ? serverFramePrepender : framePrepender );
+            ch.pipeline().addLast(FRAME_PREPENDER, (toServer) ? serverFramePrepender : framePrepender);
 
-            ch.pipeline().addLast( BOSS_HANDLER, new HandlerBoss() );
+            ch.pipeline().addLast(BOSS_HANDLER, new HandlerBoss());
         }
     }
 }

@@ -1,29 +1,26 @@
 package net.md_5.bungee.log;
 
+import lombok.RequiredArgsConstructor;
+
 import java.util.logging.Handler;
 import java.util.logging.LogRecord;
 import java.util.logging.Logger;
-import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class LoggingForwardHandler extends Handler
-{
+public class LoggingForwardHandler extends Handler {
 
     private final Logger logger;
 
     @Override
-    public void publish(LogRecord record)
-    {
-        logger.log( record );
+    public void publish(LogRecord record) {
+        logger.log(record);
     }
 
     @Override
-    public void flush()
-    {
+    public void flush() {
     }
 
     @Override
-    public void close() throws SecurityException
-    {
+    public void close() throws SecurityException {
     }
 }

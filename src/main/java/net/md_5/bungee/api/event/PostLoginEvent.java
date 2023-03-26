@@ -13,8 +13,7 @@ import net.md_5.bungee.api.plugin.Event;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class PostLoginEvent extends Event
-{
+public class PostLoginEvent extends Event {
 
     /**
      * The player involved with this event.

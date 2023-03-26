@@ -16,8 +16,7 @@ import net.md_5.bungee.api.plugin.Event;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class ServerKickEvent extends Event implements Cancellable
-{
+public class ServerKickEvent extends Event implements Cancellable {
 
     /**
      * Cancelled status.
@@ -51,41 +50,35 @@ public class ServerKickEvent extends Event implements Cancellable
     private Cause cause;
     // Waterfall end
 
-    public enum State
-    {
+    public enum State {
 
         CONNECTING, CONNECTED, UNKNOWN;
     }
 
     // Waterfall start
-    public enum Cause
-    {
+    public enum Cause {
 
         SERVER, LOST_CONNECTION, EXCEPTION, UNKNOWN;
     }
     // Waterfall end
 
     @Deprecated
-    public ServerKickEvent(ProxiedPlayer player, BaseComponent[] kickReasonComponent, ServerInfo cancelServer)
-    {
-        this( player, kickReasonComponent, cancelServer, State.UNKNOWN );
+    public ServerKickEvent(ProxiedPlayer player, BaseComponent[] kickReasonComponent, ServerInfo cancelServer) {
+        this(player, kickReasonComponent, cancelServer, State.UNKNOWN);
     }
 
     @Deprecated
-    public ServerKickEvent(ProxiedPlayer player, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state)
-    {
-        this( player, player.getServer().getInfo(), kickReasonComponent, cancelServer, state );
+    public ServerKickEvent(ProxiedPlayer player, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state) {
+        this(player, player.getServer().getInfo(), kickReasonComponent, cancelServer, state);
     }
 
     // Waterfall start
     @Deprecated
-    public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state)
-    {
-        this( player, kickedFrom, kickReasonComponent, cancelServer, state, Cause.UNKNOWN );
+    public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state) {
+        this(player, kickedFrom, kickReasonComponent, cancelServer, state, Cause.UNKNOWN);
     }
 
-    public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state, Cause cause)
-    {
+    public ServerKickEvent(ProxiedPlayer player, ServerInfo kickedFrom, BaseComponent[] kickReasonComponent, ServerInfo cancelServer, State state, Cause cause) {
         this.player = player;
         this.kickedFrom = kickedFrom;
         this.kickReasonComponent = kickReasonComponent;
@@ -96,14 +89,12 @@ public class ServerKickEvent extends Event implements Cancellable
     // Waterfall end
 
     @Deprecated
-    public String getKickReason()
-    {
-        return BaseComponent.toLegacyText( kickReasonComponent );
+    public String getKickReason() {
+        return BaseComponent.toLegacyText(kickReasonComponent);
     }
 
     @Deprecated
-    public void setKickReason(String reason)
-    {
-        kickReasonComponent = TextComponent.fromLegacyText( reason );
+    public void setKickReason(String reason) {
+        kickReasonComponent = TextComponent.fromLegacyText(reason);
     }
 }

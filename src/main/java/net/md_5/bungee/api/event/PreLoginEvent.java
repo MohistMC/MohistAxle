@@ -14,7 +14,7 @@ import net.md_5.bungee.api.plugin.Cancellable;
 /**
  * Event called to represent a player first making their presence and username
  * known.
- *
+ * <p>
  * This will NOT contain many attributes relating to the player which are filled
  * in after authentication with Mojang's servers. Examples of attributes which
  * are not available include their UUID.
@@ -22,8 +22,7 @@ import net.md_5.bungee.api.plugin.Cancellable;
 @Data
 @ToString(callSuper = false)
 @EqualsAndHashCode(callSuper = false)
-public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancellable
-{
+public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancellable {
 
     /**
      * Cancelled state.
@@ -39,9 +38,8 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      */
     private final PendingConnection connection;
 
-    public PreLoginEvent(PendingConnection connection, Callback<PreLoginEvent> done)
-    {
-        super( done );
+    public PreLoginEvent(PendingConnection connection, Callback<PreLoginEvent> done) {
+        super(done);
         this.connection = connection;
     }
 
@@ -50,9 +48,8 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      * @deprecated Use component methods instead.
      */
     @Deprecated
-    public String getCancelReason()
-    {
-        return BaseComponent.toLegacyText( getCancelReasonComponents() );
+    public String getCancelReason() {
+        return BaseComponent.toLegacyText(getCancelReasonComponents());
     }
 
     /**
@@ -62,13 +59,11 @@ public class PreLoginEvent extends AsyncEvent<PreLoginEvent> implements Cancella
      * instead.
      */
     @Deprecated
-    public void setCancelReason(String cancelReason)
-    {
-        setCancelReason( TextComponent.fromLegacyText( cancelReason ) );
+    public void setCancelReason(String cancelReason) {
+        setCancelReason(TextComponent.fromLegacyText(cancelReason));
     }
 
-    public void setCancelReason(BaseComponent... cancelReason)
-    {
+    public void setCancelReason(BaseComponent... cancelReason) {
         this.cancelReasonComponents = cancelReason;
     }
 }
