@@ -8,7 +8,7 @@ Why do this branch:
 What changes have we made:
 ------
 * Removed the module part, built it in
-* Mandatory to use JDK19 and above to run
+* Mandatory to use JDK17 and above to run
 * Localized log output (i18N)
 * The yaml processing method of built-in bukkit
 * More to be explained

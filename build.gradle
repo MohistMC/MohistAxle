@@ -14,7 +14,7 @@ repositories {
     maven { url = "https://oss.sonatype.org/content/repositories/snapshots" }
 }
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(19)
+java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 tasks.withType(JavaCompile).configureEach {
     options.compilerArgs += ["--enable-preview"]
@@ -66,6 +66,7 @@ dependencies {
     implementation 'mysql:mysql-connector-java:8.0.32'
     implementation 'it.unimi.dsi:fastutil:8.5.12'
     implementation 'com.lmax:disruptor:3.4.4'
+    implementation "com.mohistmc.yaml:yaml:0.4"
 }
 
 tasks.jar {
