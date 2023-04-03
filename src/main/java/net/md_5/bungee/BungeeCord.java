@@ -296,7 +296,7 @@ public class BungeeCord extends ProxyServer {
                 }
             };
             new ServerBootstrap()
-                    .channel(PipelineUtils.getServerChannel(info.getSocketAddress()))
+                    .channelFactory(PipelineUtils.getServerChannelFactory(info.getSocketAddress())) // Waterfall - netty reflection -> factory
                     .option(ChannelOption.SO_REUSEADDR, true) // TODO: Move this elsewhere!
                     .childAttr(PipelineUtils.LISTENER, info)
                     .childHandler(PipelineUtils.SERVER_CHILD)

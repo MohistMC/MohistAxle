@@ -175,7 +175,10 @@ public class UpstreamBridge extends PacketHandler {
                 empty = false;
             }
         }
-        Preconditions.checkArgument(!empty, "Chat message is empty");
+        if (empty) {
+            con.disconnect("Chat message is empty");
+            throw CancelSendSignal.INSTANCE;
+        }
 
         ChatEvent chatEvent = new ChatEvent(con, con.getServer(), message);
         if (!bungee.getPluginManager().callEvent(chatEvent).isCancelled()) {

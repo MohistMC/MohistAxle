@@ -15,5 +15,5 @@ What changes have we made:
 
 Upstream Projects
 ------
-* [**BungeeCord**](https://github.com/SpigotMC/BungeeCord.git)
-* [**Waterfall**](https://github.com/PaperMC/Waterfall.git)
+* [**BungeeCord**](https://github.com/SpigotMC/BungeeCord.git) 60ca8a0
+* [**Waterfall**](https://github.com/PaperMC/Waterfall.git) a7ad407f
