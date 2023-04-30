@@ -22,6 +22,8 @@ public class ForgeConstants {
      * The FML 1.8 handshake token.
      */
     public static final String FML_HANDSHAKE_TOKEN = "\0FML\0";
+    public static final String FML2_HANDSHAKE_TOKEN = "\0FML2\0";
+    public static final String FML3_HANDSHAKE_TOKEN = "\0FML3\0";
 
     public static final PluginMessage FML_RESET_HANDSHAKE = new PluginMessage(FML_HANDSHAKE_TAG, new byte[]
             {

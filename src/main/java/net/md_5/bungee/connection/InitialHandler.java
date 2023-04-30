@@ -150,7 +150,17 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
 
     @Override
     public void handle(PluginMessage pluginMessage) throws Exception {
-        this.relayMessage(pluginMessage);
+        // Waterfall start
+        try {
+            this.relayMessage(pluginMessage);
+        } catch (IllegalStateException | IllegalArgumentException ex) {
+            if (net.md_5.bungee.protocol.MinecraftDecoder.DEBUG) {
+                throw ex;
+            } else {
+                throw new QuietException(ex.getMessage());
+            }
+        }
+        // Waterfall end
     }
 
     @Override
@@ -649,10 +659,6 @@ public class InitialHandler extends PacketHandler implements PendingConnection {
             String content = new String(input.getData(), StandardCharsets.UTF_8);
 
             for (String id : content.split("\0")) {
-                // Waterfall start: Add configurable limits for plugin messaging
-                Preconditions.checkState(!(registeredChannels.size() > bungee.getConfig().getPluginChannelLimit()), "Too many registered channels. This limit can be configured in the waterfall.yml");
-                Preconditions.checkArgument(!(id.length() > bungee.getConfig().getPluginChannelNameLimit()), "Channel name too long. This limit can be configured in the waterfall.yml");
-                // Waterfall end
                 registeredChannels.add(id);
             }
         } else if (input.getTag().equals("UNREGISTER") || input.getTag().equals("minecraft:unregister")) {

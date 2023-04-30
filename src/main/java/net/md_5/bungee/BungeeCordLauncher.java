@@ -53,7 +53,7 @@ public class BungeeCordLauncher {
 
         BungeeCord bungee = new BungeeCord();
         ProxyServer.setInstance(bungee);
-        bungee.getLogger().info("Enabled Waterfall version " + bungee.getVersion());
+        bungee.getLogger().info("Enabled MohistAxle version " + bungee.getVersion());
         bungee.start();
 
         if (!options.has("noconsole")) {
