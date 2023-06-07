@@ -28,6 +28,7 @@ public class Respawn extends DefinedPacket {
     private boolean flat;
     private boolean copyMeta;
     private Location deathLocation;
+    private int portalCooldown;
 
     @Override
     public void read(ByteBuf buf, ProtocolConstants.Direction direction, int protocolVersion) {
@@ -60,6 +61,10 @@ public class Respawn extends DefinedPacket {
             if (buf.readBoolean()) {
                 deathLocation = new Location(readString(buf), buf.readLong());
             }
+        }
+        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_20 )
+        {
+            portalCooldown = readVarInt( buf );
         }
     }
 
@@ -98,6 +103,10 @@ public class Respawn extends DefinedPacket {
             } else {
                 buf.writeBoolean(false);
             }
+        }
+        if ( protocolVersion >= ProtocolConstants.MINECRAFT_1_20 )
+        {
+            writeVarInt( portalCooldown, buf );
         }
     }
 
