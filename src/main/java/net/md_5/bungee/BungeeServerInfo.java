@@ -95,14 +95,12 @@ public class BungeeServerInfo implements ServerInfo {
         sendData(channel, data, true);
     }
 
-    // TODO: Don't like this method
     @Override
     public boolean sendData(String channel, byte[] data, boolean queue) {
         Preconditions.checkNotNull(channel, "channel");
         Preconditions.checkNotNull(data, "data");
 
         Server server;
-
         synchronized (players) {
             server = players.isEmpty() ? null : players.iterator().next().getServer();
         }
